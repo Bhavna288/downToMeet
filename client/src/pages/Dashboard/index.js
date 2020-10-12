@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import api from "../../Services/api";
 import moment from "moment";
 import { Button, ButtonGroup, Alert } from "reactstrap";
+import socketio from 'socket.io-client';
 import "./Dashboard.css";
 
 //Dashboard will show all the events
@@ -16,7 +17,10 @@ export default function Dashboard({ history }) {
 
   useEffect(() => {
     getEvents();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const socket = socketio('http://localhost:8000', { query: { user: user_id } });
   }, []);
 
   const filterHandler = (query) => {
