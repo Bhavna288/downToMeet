@@ -20,10 +20,11 @@ routes.get("/status", (req, res) => {
 //Endpoints:
 
 //Registration(for events)
-routes.post("/registration/:eventId", RegistrationController.create);
+routes.post("/registration/:eventId", verifyToken, RegistrationController.create);
 
 routes.get(
   "/registration/:registrationId",
+  verifyToken,
   RegistrationController.getRegistration
 );
 //Approve
