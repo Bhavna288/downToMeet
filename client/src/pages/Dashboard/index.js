@@ -16,6 +16,7 @@ export default function Dashboard({ history }) {
   const [success, setSuccess] = useState(false);
   const [messageHandler, setMessageHandler] = useState('');
   const [eventRequests, setEventRequests] = useState([]);
+  const [registrationStatus, setRegistrationStatus] = useState('Registration Request');
 
   useEffect(() => {
     getEvents();
@@ -81,17 +82,12 @@ export default function Dashboard({ history }) {
     }
   };
 
-  const logoutHandler = () => {
-    localStorage.removeItem("user", user);
-    localStorage.removeItem("user_id", user_id);
-    history.push("/login");
-  };
-
   const registrationRequestHandler = async(event) => {
     try {
       await api.post(`/registration/${event.id}`, {}, { headers: { user }}); 
       setSuccess(true);
       setMessageHandler(`The registration request for the event ${event.title} made successfully!`);
+      setRegistrationStatus('Requested');
       setTimeout(() => {
         setSuccess(false);
         filterHandler(null);
@@ -100,9 +96,11 @@ export default function Dashboard({ history }) {
     } catch (error) {
       setError(true);
       setMessageHandler('Error while registering for event!');
+      setRegistrationStatus('Failed');
       setTimeout(() => {
         setError(false);
         setMessageHandler('');
+        setRegistrationStatus('Registration Request');
       }, 2000);
     }
   }
@@ -168,14 +166,6 @@ export default function Dashboard({ history }) {
               My Events
             </Button>
           </ButtonGroup>
-          <ButtonGroup>
-            <Button color="secondary" onClick={() => history.push("/events")}>
-              Create an event?
-            </Button>
-            <Button color="danger" onClick={logoutHandler}>
-              Logout
-            </Button>
-          </ButtonGroup>
         </div>
         <ul className="events-list">
           {events.map((event) => (
@@ -200,7 +190,7 @@ export default function Dashboard({ history }) {
               <span>Event Date: {moment(event.date).format("l")}</span>
               <span>Event Price: {parseFloat(event.price).toFixed(2)}</span>
               <span>Event Description: {event.description}</span>
-              <Button color="primary" onClick={() => registrationRequestHandler(event)}>Registration Request</Button>
+                <Button color="primary" onClick={() => registrationRequestHandler(event)}>{ registrationStatus }</Button>
             </li>
           ))}
         </ul>
