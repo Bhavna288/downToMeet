@@ -18,24 +18,26 @@ const TopNav = () => {
 
     return isLoggedIn ?
         <div>
-            {console.log(isLoggedIn)}
             <Navbar color="faded" light>
-                {/* <NavbarBrand href="/" className="mr-auto">reactstrap</NavbarBrand> */}
-                <NavbarToggler onClick={toggleNavbar} />
-                <Link to="/login" onClick={logoutHandler} className="logoutBtn">Logout</Link>
-                <Collapse isOpen={!collapsed} navbar>
-                <Nav navbar>
-                    <NavItem>
-                        <Link to="/events">Create Event</Link>
-                    </NavItem>
-                    <NavItem>
-                        <Link to="/">Dashboard</Link>
-                    </NavItem>
-                </Nav>
+                {/* <NavbarBrand href="/" className="mr-auto">reactstrap</NavbarBrand> */ }
+                <NavbarToggler onClick={ toggleNavbar } />
+                <Link to="/login" onClick={ logoutHandler } className="logoutBtn">Logout</Link>
+                <Collapse isOpen={ !collapsed } navbar>
+                    <Nav navbar>
+                        <NavItem>
+                            <Link to="/">Dashboard</Link>
+                        </NavItem>
+                        <NavItem>
+                            <Link to="/events">Create Event</Link>
+                        </NavItem>
+                        <NavItem>
+                            <Link to="/myregistrations">My Registrations</Link>
+                        </NavItem>
+                    </Nav>
                 </Collapse>
             </Navbar>
         </div>
-    : "";
+        : "";
 }
 
 export default TopNav;

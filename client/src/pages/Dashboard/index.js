@@ -116,6 +116,7 @@ export default function Dashboard({ history }) {
 
       setEventRequestSuccess(true);
       setEventRequestMessage("Event approved successfully!");
+      removeNotificationFromDashboard(eventId);
       setTimeout(() => {
         setEventRequestSuccess(false);
         setEventRequestMessage('');
@@ -131,6 +132,7 @@ export default function Dashboard({ history }) {
 
       setEventRequestSuccess(true);
       setEventRequestMessage("Event rejected!");
+      removeNotificationFromDashboard(eventId);
       setTimeout(() => {
         setEventRequestSuccess(false);
         setEventRequestMessage('');
@@ -138,6 +140,12 @@ export default function Dashboard({ history }) {
     } catch (error) {
       console.log(error);
     }
+  }
+
+  const removeNotificationFromDashboard = (eventId) => {
+    const newEvent = eventRequests.filter((event) => event._id !== eventId);
+    console.log(newEvent);
+    setEventRequests(newEvent);
   }
 
   return (

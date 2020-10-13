@@ -21,7 +21,11 @@ routes.get("/status", (req, res) => {
 
 //Registration(for events)
 routes.post("/registration/:eventId", verifyToken, RegistrationController.create);
-
+routes.get(
+  "/registration",
+  verifyToken,
+  RegistrationController.getMyRegistrations
+);
 routes.get(
   "/registration/:registrationId",
   verifyToken,
@@ -30,13 +34,13 @@ routes.get(
 //Approve
 routes.post(
   "/registration/:registrationId/approval",
-  verifyToken, 
+  verifyToken,
   ApprovalController.approval
 );
 //Reject
 routes.post(
   "/registration/:registrationId/rejection",
-  verifyToken, 
+  verifyToken,
   RejectionController.rejection
 );
 

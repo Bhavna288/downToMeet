@@ -23,9 +23,16 @@ module.exports = {
           .populate("user", "-password")
           .execPopulate();
 
+        registration.owner = registration.event.user;
+        registration.eventTitle = registration.event.title;
+        registration.eventPrice = registration.event.price;
+        registration.eventDate = registration.event.date;
+        registration.userEmail = registration.user.email;
+        registration.save();
+
         const ownerSocket = req.connectedUsers[registration.event.user];
 
-        if(ownerSocket) {
+        if (ownerSocket) {
           req.io.to(ownerSocket).emit('registration_request', registration);
         }
 
@@ -33,6 +40,7 @@ module.exports = {
       }
     })
   },
+
   async getRegistration(req, res) {
     const { registrationId } = req.params;
     console.log(req.params);
@@ -47,4 +55,21 @@ module.exports = {
       return res.send(400).send(json({ message: "Registration not found" }));
     }
   },
+
+  getMyRegistrations(req, res) {
+    jwt.verify(req.token, "secret", async (err, authData) => {
+      if (err) {
+        res.sendStatus(401);
+      } else {
+        try {
+          const registrationArr = await Registration.find({ "owner": authData.user._id });
+          if (registrationArr) {
+            return res.json(registrationArr);
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    })
+  }
 };
