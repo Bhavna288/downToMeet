@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from "react";
 import api from "../../Services/api";
 import moment from "moment";
-import { Button, ButtonGroup, Alert } from "reactstrap";
+import { Button, ButtonGroup, Alert, Dropdown, DropdownItem, DropdownMenu, DropdownToggle } from "reactstrap";
 import socketio from 'socket.io-client';
 import "./Dashboard.css";
 
@@ -17,6 +17,11 @@ export default function Dashboard({ history }) {
   const [messageHandler, setMessageHandler] = useState('');
   const [eventRequests, setEventRequests] = useState([]);
   const [registrationStatus, setRegistrationStatus] = useState('Registration Request');
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [eventRequestMessage, setEventRequestMessage] = useState('');
+  const [eventRequestSuccess, setEventRequestSuccess] = useState(false);
+
+  const toggle = () => setDropdownOpen(!dropdownOpen);
 
   useEffect(() => {
     getEvents();
@@ -87,7 +92,7 @@ export default function Dashboard({ history }) {
       await api.post(`/registration/${event.id}`, {}, { headers: { user }}); 
       setSuccess(true);
       setMessageHandler(`The registration request for the event ${event.title} made successfully!`);
-      setRegistrationStatus('Requested');
+      // setRegistrationStatus('Requested');
       setTimeout(() => {
         setSuccess(false);
         filterHandler(null);
@@ -96,30 +101,60 @@ export default function Dashboard({ history }) {
     } catch (error) {
       setError(true);
       setMessageHandler('Error while registering for event!');
-      setRegistrationStatus('Failed');
+      // setRegistrationStatus('Failed');
       setTimeout(() => {
         setError(false);
         setMessageHandler('');
-        setRegistrationStatus('Registration Request');
+        // setRegistrationStatus('Registration Request');
       }, 2000);
     }
   }
+
+  const acceptEventHandler = async (eventId) => {
+    try {
+      await api.post(`/registration/${eventId}/approval`, {}, { headers: { user }});
+
+      setEventRequestSuccess(true);
+      setEventRequestMessage("Event approved successfully!");
+      setTimeout(() => {
+        setEventRequestSuccess(false);
+        setEventRequestMessage('');
+      }, 2000);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const rejectEventHandler = async (eventId) => {
+    try {
+      await api.post(`/registration/${eventId}/rejection`, {}, { headers: { user }});
+
+      setEventRequestSuccess(true);
+      setEventRequestMessage("Event rejected!");
+      setTimeout(() => {
+        setEventRequestSuccess(false);
+        setEventRequestMessage('');
+      }, 2000);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   return (
     <>
       <ul className="notifications">
         {eventRequests.map(request => {
-          console.log(request);
           return(
             <li key={request._id}>
               <div>
                 <strong>{request.user.email}</strong> is requesting to register to your event
                 <strong>{request.event.title}</strong>
                 <ButtonGroup>
-                  <Button color="secondary" onClick={() => {}}>
+                  <Button color="secondary" onClick={() => acceptEventHandler(request._id)}>
                     Accept
                   </Button>
-                  <Button color="danger" onClick={() => {}}>
-                    Deny
+                  <Button color="danger" onClick={() => rejectEventHandler(request._id)}>
+                    Reject
                   </Button>
                 </ButtonGroup>
               </div>
@@ -127,45 +162,23 @@ export default function Dashboard({ history }) {
           )
         })}
       </ul>
+      {eventRequestSuccess ?
+        <Alert className="event-validation" color="success">{eventRequestMessage}</Alert>
+        : ""}
       <div className="dashboard-page">
         <div className="filter-panel">
-          <ButtonGroup>
-            <Button
-              color="primary"
-              onClick={() => filterHandler(null)}
-              active={rSelected === null}
-            >
-              All Sports
-            </Button>
-            <Button
-              color="primary"
-              onClick={() => filterHandler("webinar")}
-              active={rSelected === "webinar"}
-            >
-              Webinar
-            </Button>
-            <Button
-              color="primary"
-              onClick={() => filterHandler("workshop")}
-              active={rSelected === "workshop"}
-            >
-              Workshop
-            </Button>
-            <Button
-              color="primary"
-              onClick={() => filterHandler("seminar")}
-              active={rSelected === "seminar"}
-            >
-              Seminar
-            </Button>
-            <Button
-              color="primary"
-              onClick={myEventsHandler}
-              active={rSelected === "myEvents"}
-            >
-              My Events
-            </Button>
-          </ButtonGroup>
+          <Dropdown isOpen={dropdownOpen} toggle={toggle}>
+            <DropdownToggle color="success" caret>
+              Filter
+            </DropdownToggle>
+            <DropdownMenu>
+              <DropdownItem onClick={() => filterHandler(null)} active={rSelected === null}>All Events</DropdownItem>
+              <DropdownItem onClick={() => filterHandler("webinar")} active={rSelected === "webinar"}>Webinar</DropdownItem>
+              <DropdownItem onClick={() => filterHandler("workshop")} active={rSelected === "workshop"}>Workshop</DropdownItem>
+              <DropdownItem onClick={() => filterHandler("seminar")} active={rSelected === "seminar"}>Seminar</DropdownItem>
+              <DropdownItem onClick={myEventsHandler} active={rSelected === "myEvents"}>My Events</DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
         </div>
         <ul className="events-list">
           {events.map((event) => (

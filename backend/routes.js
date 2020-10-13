@@ -30,11 +30,13 @@ routes.get(
 //Approve
 routes.post(
   "/registration/:registrationId/approval",
+  verifyToken, 
   ApprovalController.approval
 );
 //Reject
 routes.post(
   "/registration/:registrationId/rejection",
+  verifyToken, 
   RejectionController.rejection
 );
 
