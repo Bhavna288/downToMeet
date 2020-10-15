@@ -10,7 +10,7 @@ module.exports = {
       } else {
         const user_id = authData.user._id;
         const { eventId } = req.params;
-        const date = new Date();
+        const date = Date.now();
 
         const registration = await Registration.create({
           date: date,
