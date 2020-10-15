@@ -49,7 +49,7 @@ ul.notifications li {
 }
 
 .logoutBtn {
-  background-color: coral;
+  background-color: rgb(199, 39, 33);
   color: white;
   border: 2px solid white;
   text-decoration: none;
@@ -58,9 +58,21 @@ ul.notifications li {
 }
 
 .logoutBtn:hover {
-  background-color: rgb(247, 104, 53);
+  background-color: rgb(250, 45, 90);
   color: white;
   border: 2px solid white;
+  text-decoration: none;
+}
+
+.viewBtn {
+  background-color: sandybrown;
+  padding: 10px 20px;
+  border-radius: 5px;
+  text-align: center;
+}
+
+.viewBtn a {
+  color: white;
   text-decoration: none;
 }
 
